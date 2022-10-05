@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Task } from "./lib/task";
 
 function App() {
@@ -8,7 +8,10 @@ function App() {
     setInput(e.target.value);
   };
 
-  const [list, setList] = useState<Task[]>([]);
+  const localList = localStorage.getItem("dumpList");
+  const [list, setList] = useState<Task[]>(
+    localList ? JSON.parse(localList) : []
+  );
 
   const addItemToList = () => {
     if (input.length > 0) {
@@ -18,7 +21,9 @@ function App() {
     setInput(``);
   };
 
-  const clearList = () => setList([]);
+  const clearList = () => {
+    setList([]);
+  };
 
   const selectedItem = new Set<string>();
 
@@ -37,6 +42,8 @@ function App() {
     setList(newList);
   };
 
+  useEffect(() => {saveData(list)}, [list]);
+
   return (
     <div className="App">
       <input
@@ -54,9 +61,9 @@ function App() {
       <ul>
         {list.map((task: Task) => (
           <li key={task.id}>
-            <input type="checkbox" id={task.id} onChange={onChecked} />
+            <input type="checkbox" id={task.id.toString()} onChange={onChecked} />
             <input type="checkbox" />
-            <label htmlFor={task.id}>{task.title}</label>
+            <label htmlFor={task.id.toString()}>{task.title}</label>
           </li>
         ))}
       </ul>
@@ -65,6 +72,10 @@ function App() {
       </button>
     </div>
   );
+}
+
+function saveData(list: Task[]): void {
+  localStorage.setItem("dumpList", JSON.stringify(list));
 }
 
 export default App;

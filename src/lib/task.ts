@@ -1,11 +1,11 @@
-import nextId from "react-id-generator";
+import uuid from "react-uuid"
 
 class Task {
-  id: string;
+  readonly id: string;
   title: string;
 
   constructor(input: string) {
-    this.id = nextId();
+    this.id = uuid();
     this.title = input;
   }
 }
