@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Task } from "./lib/task";
 import TaskListItem from "./TaskListItem";
+import Buttons from "./Buttons";
+import "./style.css";
 
 export default function App() {
   // ================================= read =================================
@@ -86,33 +88,27 @@ export default function App() {
   // ================================ Generate ================================
   return (
     <main>
-      <input
-        type="text"
-        value={input}
-        onChange={handleInput}
-        placeholder="완벽보다는 완수에 의미를 두자."
-      />
-      <button type="button" onClick={() => addTaskToList(input, list)}>
-        add
-      </button>
-      <button type="button" onClick={() => setList([])}>
-        clear
-      </button>
-      <br />
-      <button
-        type="button"
-        onClick={() => toggleSelectMode(selectMode, selectedItems)}
-      >
-        select
-      </button>
-      {selectMode && (
-        <button
-          type="button"
-          onClick={() => deleteSelectedItemsFromList(list, selectedItems)}
-        >
-          delete
+      <div>
+        <input
+          type="text"
+          value={input}
+          onChange={handleInput}
+          placeholder="완벽보다는 완수에 의미를 두자."
+        />
+        <button type="button" onClick={() => addTaskToList(input, list)}>
+          add
         </button>
-      )}
+        <button type="button" onClick={() => setList([])}>
+          clear
+        </button>
+        <Buttons
+          toggleSelectMode={toggleSelectMode}
+          selectMode={selectMode}
+          list={list}
+          selectedItems={selectedItems}
+          deleteSelectedItemsFromList={deleteSelectedItemsFromList}
+        />
+      </div>
       <ul>
         {list.map((task: Task) => (
           <li
@@ -135,6 +131,13 @@ export default function App() {
           </li>
         ))}
       </ul>
+      <Buttons
+        toggleSelectMode={toggleSelectMode}
+        selectMode={selectMode}
+        list={list}
+        selectedItems={selectedItems}
+        deleteSelectedItemsFromList={deleteSelectedItemsFromList}
+      />
     </main>
   );
 }
