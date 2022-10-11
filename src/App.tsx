@@ -1,81 +1,78 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Task } from "./lib/task";
+import TaskListItem from "./EachTaskItem";
 
-function App() {
+export default function App() {
   const [input, setInput] = useState<string>(``);
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
 
   const localList = localStorage.getItem("dumpList");
   const [list, setList] = useState<Task[]>(
     localList ? JSON.parse(localList) : []
   );
 
-  const addItemToList = () => {
-    if (input.length > 0) {
-      const task = new Task(input);
-      setList([...list, task]);
-    }
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const addTaskToList = (input: string, list: Task[]) => {
+    input.length > 0 && setList([...list, new Task(input)]);
     setInput(``);
   };
 
-  const clearList = () => {
-    setList([]);
+  useEffect(() => {
+    localStorage.setItem("dumpList", JSON.stringify(list));
+  }, [list]);
+
+  const [editTargetTaskId, setEditTargetTaskID] = useState<string>(``);
+  const [editMode, setEditMode] = useState<boolean>(false);
+
+  const toggleEditMode = (editMode: boolean) =>
+    editMode ? setEditMode(false) : setEditMode(true);
+
+  const triggerEdit = (e: React.MouseEvent<HTMLLabelElement>) => {
+    setEditTargetTaskID(e.currentTarget.parentElement?.id || ``);
+    toggleEditMode(false);
   };
 
-  const selectedItem = new Set<string>();
-
-  const onChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.target.checked
-      ? selectedItem.add(e.target.id)
-      : selectedItem.delete(e.target.id);
-    console.log(selectedItem);
+  const editTask = (
+    newInput: string,
+    list: Task[],
+    editTaskId: string,
+    editMode: boolean
+  ) => {
+    setList(
+      list.map((task: Task) => {
+        if (task.id === editTaskId) {
+          return { ...task, title: newInput };
+        } else return task;
+      })
+    );
+    toggleEditMode(editMode);
   };
-
-  const deleteSelectedItemsFromList = () => {
-    let newList: Task[] = [...list];
-    selectedItem.forEach((id: string) => {
-      newList = newList.filter((task) => task.id !== id);
-    });
-    setList(newList);
-  };
-
-  useEffect(() => {saveData(list)}, [list]);
 
   return (
-    <div className="App">
-      <input
-        type="text"
-        value={input}
-        onChange={onChange}
-        placeholder="완벽보다는 완수에 의미를 두자"
-      />
-      <button type="button" onClick={addItemToList}>
-        submit
+    <main>
+      <input type="text" value={input} onChange={handleInput} />
+      <button type="button" onClick={() => addTaskToList(input, list)}>
+        add
       </button>
-      <button type="button" onClick={clearList}>
+      <button type="button" onClick={() => setList([])}>
         clear
       </button>
       <ul>
         {list.map((task: Task) => (
-          <li key={task.id}>
-            <input type="checkbox" id={task.id.toString()} onChange={onChecked} />
-            <input type="checkbox" />
-            <label htmlFor={task.id.toString()}>{task.title}</label>
+          <li key={task.id} id={task.id}>
+            <TaskListItem
+              task={task}
+              list={list}
+              isEdit={editMode}
+              triggerEdit={triggerEdit}
+              editTaskId={editTargetTaskId}
+              editTask={editTask}
+            />
           </li>
         ))}
       </ul>
-      <button type="button" onClick={deleteSelectedItemsFromList}>
-        delete
-      </button>
-    </div>
+    </main>
   );
 }
-
-function saveData(list: Task[]): void {
-  localStorage.setItem("dumpList", JSON.stringify(list));
-}
-
-export default App;
