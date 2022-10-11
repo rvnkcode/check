@@ -3,6 +3,29 @@ import { Task } from "./lib/task";
 import TaskListItem from "./TaskListItem";
 import Buttons from "./Buttons";
 import "./style.css";
+import styled from "styled-components";
+
+const StyledMain = styled.main`
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 1080px) {
+    width: 1020px;
+  }
+`;
+
+const StyledSection = styled.section`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+`;
+
+const StyledDiv = styled.div`
+  display: flex;
+`;
+
+const StyledInput = styled.input`
+  flex: 1;
+`;
 
 export default function App() {
   // ================================= read =================================
@@ -87,57 +110,68 @@ export default function App() {
 
   // ================================ Generate ================================
   return (
-    <main>
-      <div>
-        <input
-          type="text"
-          value={input}
-          onChange={handleInput}
-          placeholder="완벽보다는 완수에 의미를 두자."
-        />
-        <button type="button" onClick={() => addTaskToList(input, list)}>
-          add
-        </button>
-        <button type="button" onClick={() => setList([])}>
-          clear
-        </button>
-        <Buttons
-          toggleSelectMode={toggleSelectMode}
-          selectMode={selectMode}
-          list={list}
-          selectedItems={selectedItems}
-          deleteSelectedItemsFromList={deleteSelectedItemsFromList}
-        />
-      </div>
-      <ul>
-        {list.map((task: Task) => (
-          <li
-            key={task.id}
-            id={task.id}
-            onClick={
-              selectMode
-                ? () => handleSelectedItem(selectedItems, task.id)
-                : () => console.log(`not select mode`)
-            }
-          >
-            <TaskListItem
-              task={task}
-              list={list}
-              isEdit={editMode}
-              triggerEdit={triggerEdit}
-              editTaskId={editTargetTaskId}
-              editTask={editTask}
+    <>
+      <nav></nav>
+      <StyledMain>
+        <header></header>
+        <StyledSection>
+          <StyledDiv>
+            <StyledInput
+              type="text"
+              value={input}
+              onChange={handleInput}
+              placeholder="완벽보다는 완수에 의미를 두자."
             />
-          </li>
-        ))}
-      </ul>
-      <Buttons
-        toggleSelectMode={toggleSelectMode}
-        selectMode={selectMode}
-        list={list}
-        selectedItems={selectedItems}
-        deleteSelectedItemsFromList={deleteSelectedItemsFromList}
-      />
-    </main>
+            <button type="button" onClick={() => addTaskToList(input, list)}>
+              add
+            </button>
+            <button type="button" onClick={() => setList([])}>
+              clear
+            </button>
+            <button type="button" onClick={() => console.log(list)}>
+              DEBUG
+            </button>
+          </StyledDiv>
+          <Buttons
+            toggleSelectMode={toggleSelectMode}
+            selectMode={selectMode}
+            list={list}
+            selectedItems={selectedItems}
+            deleteSelectedItemsFromList={deleteSelectedItemsFromList}
+          />
+        </StyledSection>
+        <ul>
+          {list.map((task: Task) => (
+            <li
+              key={task.id}
+              id={task.id}
+              onClick={
+                selectMode
+                  ? () => handleSelectedItem(selectedItems, task.id)
+                  : () => null
+              }
+            >
+              <TaskListItem
+                task={task}
+                list={list}
+                isEdit={editMode}
+                triggerEdit={triggerEdit}
+                editTaskId={editTargetTaskId}
+                editTask={editTask}
+              />
+            </li>
+          ))}
+        </ul>
+        <section>
+          <Buttons
+            toggleSelectMode={toggleSelectMode}
+            selectMode={selectMode}
+            list={list}
+            selectedItems={selectedItems}
+            deleteSelectedItemsFromList={deleteSelectedItemsFromList}
+          />
+        </section>
+      </StyledMain>
+    </>
   );
 }

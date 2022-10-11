@@ -1,5 +1,6 @@
 import React from "react";
 import { Task } from "./lib/task";
+// import styled from "styled-components";
 
 interface IButtonsProps {
   selectMode: boolean;
@@ -17,7 +18,7 @@ export default function Buttons({
   selectMode,
   list,
   selectedItems,
-  deleteSelectedItemsFromList
+  deleteSelectedItemsFromList,
 }: IButtonsProps) {
   return (
     <div>
@@ -27,14 +28,13 @@ export default function Buttons({
       >
         select
       </button>
-      {selectMode && (
-        <button
-          type="button"
-          onClick={() => deleteSelectedItemsFromList(list, selectedItems)}
-        >
-          delete
-        </button>
-      )}
+      <button
+        type="button"
+        disabled={!selectMode}
+        onClick={() => deleteSelectedItemsFromList(list, selectedItems)}
+      >
+        delete
+      </button>
     </div>
   );
 }
