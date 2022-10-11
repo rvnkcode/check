@@ -38,12 +38,6 @@ export default function TaskListItem({
           onChange={handleUpdateInput}
           onBlur={() => editTask(updateInput, list, editTaskId, isEdit)}
         />
-        {/*         <button
-          type="button"
-          onClick={() => editTask(updateInput, list, editTaskId, isEdit)}
-        >
-          update
-        </button> */}
       </>
     );
   } else {

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Task } from "./lib/task";
-import TaskListItem from "./EachTaskItem";
+import TaskListItem from "./TaskListItem";
 
 export default function App() {
-  const [input, setInput] = useState<string>(``);
-
+  // ================================= read =================================
   const localList = localStorage.getItem("dumpList");
   const [list, setList] = useState<Task[]>(
     localList ? JSON.parse(localList) : []
   );
 
+  // ================================= create =================================
+  const [input, setInput] = useState<string>(``);
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
@@ -23,6 +24,7 @@ export default function App() {
     localStorage.setItem("dumpList", JSON.stringify(list));
   }, [list]);
 
+  // ================================= update =================================
   const [editTargetTaskId, setEditTargetTaskID] = useState<string>(``);
   const [editMode, setEditMode] = useState<boolean>(false);
 
@@ -50,18 +52,78 @@ export default function App() {
     toggleEditMode(editMode);
   };
 
+  // ================================= delete =================================
+  const [selectMode, setSelectMode] = useState<boolean>(false);
+  const selectedItems = new Set<string>();
+
+  const toggleSelectMode = (
+    selectMode: boolean,
+    selectedItems: Set<string>
+  ) => {
+    if (selectMode) {
+      setSelectMode(false);
+      selectedItems.clear();
+      console.log(selectedItems);
+    } else setSelectMode(true);
+  };
+
+  const handleSelectedItem = (selectedItems: Set<string>, id: string) => {
+    selectedItems.has(id) ? selectedItems.delete(id) : selectedItems.add(id);
+    console.log(selectedItems);
+  };
+
+  const deleteSelectedItemsFromList = (
+    list: Task[],
+    selectedItems: Set<string>
+  ) => {
+    let newList: Task[] = [...list];
+    selectedItems.forEach((id: string) => {
+      newList = newList.filter((task) => task.id !== id);
+    });
+    setList(newList);
+  };
+
+  // ================================ Generate ================================
   return (
     <main>
-      <input type="text" value={input} onChange={handleInput} />
+      <input
+        type="text"
+        value={input}
+        onChange={handleInput}
+        placeholder="완벽보다는 완수에 의미를 두자."
+      />
       <button type="button" onClick={() => addTaskToList(input, list)}>
         add
       </button>
       <button type="button" onClick={() => setList([])}>
         clear
       </button>
+      <br />
+      <button
+        type="button"
+        onClick={() => toggleSelectMode(selectMode, selectedItems)}
+      >
+        select
+      </button>
+      {selectMode && (
+        <button
+          type="button"
+          onClick={() => deleteSelectedItemsFromList(list, selectedItems)}
+        >
+          delete
+        </button>
+      )}
       <ul>
         {list.map((task: Task) => (
-          <li key={task.id} id={task.id}>
+          <li
+            key={task.id}
+            id={task.id}
+            onClick={
+              selectMode
+                ? () => handleSelectedItem(selectedItems, task.id)
+                : () => console.log(`not select mode`)
+            }
+          >
             <TaskListItem
               task={task}
               list={list}
