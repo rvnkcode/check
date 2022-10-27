@@ -4,7 +4,7 @@
 
 This is task-management application written by typescript, react, etc....
 
-## TODOS
+## Roadmap
 
 - [ ] auto focus text box when update the task
 - [ ] update css or use css framework
