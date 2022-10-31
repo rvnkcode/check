@@ -79,34 +79,40 @@ export default function App() {
 
   // ================================= delete =================================
   const [selectMode, setSelectMode] = useState<boolean>(false);
-  const selectedItems = new Set<string>();
+  const [selectedSet, setSelectedSet] = useState<Set<string>>(new Set());
+  const [selectedArr, setSelectedArr] = useState<string[]>([]);
 
-  const toggleSelectMode = (
-    selectMode: boolean,
-    selectedItems: Set<string>
-  ) => {
+  const toggleSelectMode = (selectMode: boolean, selected: Set<string>) => {
     if (selectMode) {
       setSelectMode(false);
-      selectedItems.clear();
-      console.log(selectedItems);
+      selected.clear();
+      setSelectedSet(selected);
+      setSelectedArr([]);
+      console.log(selectedSet);
     } else setSelectMode(true);
   };
 
-  const handleSelectedItem = (selectedItems: Set<string>, id: string) => {
-    selectedItems.has(id) ? selectedItems.delete(id) : selectedItems.add(id);
-    console.log(selectedItems);
+  const handleSelectedItem = (selected: Set<string>, id: string) => {
+    selected.has(id) ? selected.delete(id) : selected.add(id);
+    setSelectedSet(selected);
+    setSelectedArr(Array.from(selected));
+    console.log(selectedSet);
   };
 
-  const deleteSelectedItemsFromList = (
-    list: Task[],
-    selectedItems: Set<string>
-  ) => {
+  const deleteSelectedItemsFromList = (list: Task[], selected: Set<string>) => {
     let newList: Task[] = [...list];
-    selectedItems.forEach((id: string) => {
+    selected.forEach((id: string) => {
       newList = newList.filter((task) => task.id !== id);
     });
+    selected.clear();
+    setSelectedSet(selected);
+    setSelectedArr([]);
+    setSelectMode(false);
     setList(newList);
   };
+
+  // ================================ Generate ================================
+  // if (selectMode && selectedItems.size > 0) {}
 
   // ================================ Generate ================================
   return (
@@ -136,7 +142,7 @@ export default function App() {
             toggleSelectMode={toggleSelectMode}
             selectMode={selectMode}
             list={list}
-            selectedItems={selectedItems}
+            selectedItems={selectedSet}
             deleteSelectedItemsFromList={deleteSelectedItemsFromList}
           />
         </StyledSection>
@@ -147,8 +153,13 @@ export default function App() {
               id={task.id}
               onClick={
                 selectMode
-                  ? () => handleSelectedItem(selectedItems, task.id)
+                  ? () => handleSelectedItem(selectedSet, task.id)
                   : () => null
+              }
+              className={
+                selectMode && selectedArr.includes(task.id)
+                  ? `selected`
+                  : undefined
               }
             >
               <TaskListItem
@@ -167,7 +178,7 @@ export default function App() {
             toggleSelectMode={toggleSelectMode}
             selectMode={selectMode}
             list={list}
-            selectedItems={selectedItems}
+            selectedItems={selectedSet}
             deleteSelectedItemsFromList={deleteSelectedItemsFromList}
           />
         </section>

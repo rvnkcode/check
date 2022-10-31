@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Task } from "./lib/task";
 
-interface IEachTaskItemProps {
+interface ITaskListItemProps {
   task: Task;
   isEdit: boolean;
   editTaskId: string;
@@ -22,7 +22,7 @@ export default function TaskListItem({
   list,
   triggerEdit,
   editTask,
-}: IEachTaskItemProps) {
+}: ITaskListItemProps) {
   const [updateInput, setUpdateInput] = useState<string>(task.title);
   const handleUpdateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUpdateInput(e.target.value);
@@ -37,6 +37,7 @@ export default function TaskListItem({
           value={updateInput}
           onChange={handleUpdateInput}
           onBlur={() => editTask(updateInput, list, editTaskId, isEdit)}
+          autoFocus
         />
       </>
     );
